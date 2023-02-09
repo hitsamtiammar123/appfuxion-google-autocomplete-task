@@ -47,7 +47,7 @@ export default function Body() {
     apiKey: API_KEY,
     options: {
       strictBounds: false,
-      types: ['establishment'],
+      types: ['establishment1'],
     },
     onPlaceSelected: onPlaceSelected,
   });
@@ -57,6 +57,14 @@ export default function Body() {
       map.setCenter(place.location);
       map.setZoom(17);
     }
+    if (autocompleteRef.current) {
+      const autocompleteElem = autocompleteRef.current;
+      const placeChangedEvent = autocompleteElem.__e3_.place_changed;
+      if (Object.keys(placeChangedEvent).length === 0) {
+        autocompleteElem.addListener(onPlaceSelected);
+      }
+    }
+    console.log({ autocompleteRef });
   }, [place, map]);
 
   function setMarkerLocation(placeObj, locationObj) {
@@ -139,44 +147,42 @@ export default function Body() {
     }, 300);
   }
 
+  function renderMap() {
+    return (
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={center}
+        zoom={13}
+        onClick={() => isDisplayInfoWindow && setIsDisplayInfoWindow(false)}
+        ref={mapRef}
+        options={{
+          mapTypeControl: false,
+        }}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
+      >
+        <Marker onClick={() => setIsDisplayInfoWindow(!isDisplayInfoWindow)} position={location}>
+          {isDisplayInfoWindow && (
+            <InfoWindow onCloseClick={() => setIsDisplayInfoWindow(false)}>
+              <Button
+                onClick={savePlace}
+                variant="contained"
+                color={checkLocation ? 'error' : 'primary'}
+              >
+                {checkLocation ? 'Remove Location' : 'Save Location'}
+              </Button>
+            </InfoWindow>
+          )}
+        </Marker>
+      </GoogleMap>
+    );
+  }
+
   return (
     <Grid direction="column" justifyContent="flex-start" container>
       <Header onIconButtonClick={() => setShowDialog(true)} inputRef={ref} />
       <Grid item flex={1} className="map-container">
-        {isLoaded && (
-          <GoogleMap
-            mapContainerStyle={containerStyle}
-            center={center}
-            zoom={13}
-            onClick={() => isDisplayInfoWindow && setIsDisplayInfoWindow(false)}
-            ref={mapRef}
-            options={{
-              mapTypeControl: false,
-            }}
-            inputProps={{
-              className: 'map-input',
-            }}
-            onLoad={onLoad}
-            onUnmount={onUnmount}
-          >
-            <Marker
-              onClick={() => setIsDisplayInfoWindow(!isDisplayInfoWindow)}
-              position={location}
-            >
-              {isDisplayInfoWindow && (
-                <InfoWindow onCloseClick={() => setIsDisplayInfoWindow(false)}>
-                  <Button
-                    onClick={savePlace}
-                    variant="contained"
-                    color={checkLocation ? 'error' : 'primary'}
-                  >
-                    {checkLocation ? 'Remove Location' : 'Save Location'}
-                  </Button>
-                </InfoWindow>
-              )}
-            </Marker>
-          </GoogleMap>
-        )}
+        {isLoaded && renderMap()}
       </Grid>
       <SavedLocation
         onCloseItemButtonClicked={onCloseItemButtonClicked}
