@@ -64,7 +64,6 @@ export default function Body() {
         autocompleteElem.addListener(onPlaceSelected);
       }
     }
-    console.log({ autocompleteRef });
   }, [place, map]);
 
   function setMarkerLocation(placeObj, locationObj) {
