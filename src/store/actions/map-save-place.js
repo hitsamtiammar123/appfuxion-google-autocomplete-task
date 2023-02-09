@@ -9,3 +9,19 @@ export const removePlace = (payload) => ({
   type: REMOVE_PLACE,
   payload,
 });
+
+export const tooglePlace = (payload) => {
+  return (dispatch, getState) => {
+    if (!payload) {
+      return;
+    }
+    const { mapsaveplace } = getState();
+    const savePlaces = mapsaveplace.savedPlaces;
+
+    if (savePlaces.findIndex((item) => item.id === payload.id) !== -1) {
+      dispatch(removePlace(payload));
+    } else {
+      dispatch(addPlace(payload));
+    }
+  };
+};

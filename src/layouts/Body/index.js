@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setSearchResult } from 'src/store/actions/map-search';
 import { Header } from 'layouts';
 import { API_KEY } from 'constants';
-import { addPlace, removePlace as removePlaceAction } from 'src/store/actions/map-save-place';
+import { removePlace as removePlaceAction, tooglePlace } from 'src/store/actions/map-save-place';
 import { SavedLocation } from 'dialogs';
 
 const containerStyle = {
@@ -125,11 +125,7 @@ export default function Body() {
   }
 
   function savePlace() {
-    if (checkLocation) {
-      removePlace(place.id);
-      return;
-    }
-    dispatch(addPlace(place));
+    dispatch(tooglePlace(place));
   }
 
   function onCloseItemButtonClicked(item) {

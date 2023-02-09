@@ -1,5 +1,6 @@
-import { combineReducers, createStore, compose } from 'redux';
+import { combineReducers, createStore, compose, applyMiddleware } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
+import thunk from 'redux-thunk';
 import storage from 'redux-persist/lib/storage';
 import mapSearch from './reducers/map-search';
 import mapSavePlace from './reducers/map-save-place';
@@ -21,7 +22,7 @@ const composeEnhancer =
 
 const persistedReducer = persistReducer(persistConfig, reducers);
 
-const store = createStore(persistedReducer, composeEnhancer());
+const store = createStore(persistedReducer, composeEnhancer(applyMiddleware(thunk)));
 const persistor = persistStore(store);
 
 export { reducers, persistedReducer, persistor };
