@@ -5,7 +5,13 @@
     "target": "es6",
     "jsx": "react",
     "paths": {
-      "src/*": ["./src/*"]
+      "src/*": ["./src/*"],
+      "layouts": ["./src/layouts/index"],
+      "layouts/*":["./src/layouts/*"],
+      "redux/*":["src/store/*"],
+      "dialogs": ["./src/dialogs/index"],
+      "dialogs/*": ["./src/dialogs/*"],
+      "constants": ["./src/constants"]
     }
   }
 }
