@@ -1,1 +1,22 @@
+.map-input-container{
+  position: sticky;
+  top: 0px;
+  z-index: 1000;
+  background-color: white;
+  padding: 20px 15px 10px;
+
+  .map-input-field{
+    flex: 1;
+
+    .map-input{
+      height: 30px;
+    }
+  }
+
+  .drawer-button{
+    width: 25px;
+    margin-left: 20px;
+  }
+
+}
 

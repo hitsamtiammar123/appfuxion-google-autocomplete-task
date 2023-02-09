@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.scss';
-import { Grid, TextField } from '@mui/material';
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import { Grid, TextField, Button, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemButton, ListItemText, DialogContentText } from '@mui/material';
+import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined';
+import FmdGoodIcon from '@mui/icons-material/FmdGood';
+import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
 import { usePlacesWidget } from "react-google-autocomplete";
 
 /**
@@ -25,6 +27,8 @@ function App() {
   const [place, setPlace] = useState(null);
   const [libraries] = useState(['places']);
   const [location, setLocation] = useState(center);
+  const [isShowDialog, setShowDialog] = useState(false);
+  const [isDisplayInfoWindow, setIsDisplayInfoWindow] = useState(false);
   const mapRef = useRef(null);
 
   const { isLoaded } = useJsApiLoader({
@@ -39,18 +43,7 @@ function App() {
       strictBounds: false,
       types: ["establishment"],
     },
-    onPlaceSelected: (place) => {
-      if(!place.geometry || !place.geometry.location){
-        console.log('No Place detail')
-        return;
-      }
-      if(mapRef.current){
-        mapRef.current.setCenter(place.geometry.location)
-        setLocation(place.geometry.location)
-        mapRef.current.setZoom(17)
-        setPlace(place);
-      }
-    }
+    onPlaceSelected: onPlaceSelected
   });
 
   useEffect(() => {
@@ -62,8 +55,21 @@ function App() {
     }
   }, [place, map]);
 
+
+  function onPlaceSelected(place){
+    if(!place.geometry || !place.geometry.location){
+      console.log('No Place detail')
+      return;
+    }
+    if(mapRef.current){
+      mapRef.current.setCenter(place.geometry.location)
+      mapRef.current.setZoom(17)
+    }
+    setLocation(place.geometry.location)
+    setPlace(place);
+  }
+
   function onLoad(map){
-    // This is just an example of getting and using the map instance!!! don't just blindly copy!
     map.setCenter(center)
     mapRef.current = map;
     autocompleteRef.current.bindTo("bounds", map);
@@ -74,26 +80,72 @@ function App() {
     setMap(null)
   }
 
+  console.log('autocomplete', autocompleteRef.current)
+
   return (
-    <Grid direction="column" container>
-      <TextField inputRef={ref} fullWidth label="Search data" variant="outlined" />
+    <Grid direction="column" justifyContent="flex-start" container>
+      <Grid className="map-input-container" container item direction="row">
+        <TextField variant="standard" className="map-input-field" inputRef={ref} label="Search data" />
+        <Button onClick={() => setShowDialog(true)} className="drawer-button" variant="outlined">
+          <FmdGoodIcon/>
+        </Button>
+      </Grid>
       <Grid item flex={1} className="map-container">
         {isLoaded && (
           <GoogleMap
             mapContainerStyle={containerStyle}
             center={center}
-            zoom={17}
+            zoom={13}
+            onClick={() => isDisplayInfoWindow && setIsDisplayInfoWindow(false)}
             ref={mapRef}
             options={{
               mapTypeControl: false
             }}
+            inputProps={{
+              className: 'map-input'
+            }}
             onLoad={onLoad}
             onUnmount={onUnmount}
           >
-            <Marker position={location} />
+            <Marker onClick={() => setIsDisplayInfoWindow(!isDisplayInfoWindow)} position={location}>
+              {isDisplayInfoWindow && (
+                <InfoWindow onCloseClick={() => setIsDisplayInfoWindow(false)}>
+                  <Button variant="contained" color="primary">Save Location</Button>
+                </InfoWindow>
+              )}
+            </Marker>
           </GoogleMap>
         )}
       </Grid>
+      <Dialog fullWidth maxWidth="sm" open={isShowDialog} onClose={() => setShowDialog(false)}>
+          <DialogTitle>Saved Locations</DialogTitle>
+          <DialogContent >
+          <Grid fullWidth container justifyContent="center">
+            <List>
+              <ListItem>
+                <ListItemButton>
+                  <ListItemText>Xconnect - Rua 16 - Vila Velha, Fortaleza - State of Ceará, Brazil</ListItemText>
+                  <ArrowForwardOutlinedIcon />
+                </ListItemButton>
+              </ListItem>
+              <ListItem>
+                <ListItemButton>
+                  <ListItemText>Gambiarra ventiladores - Rua do Poente - Barra do Ceará, Fortaleza - State of Ceará, Brazi</ListItemText>
+                  <ArrowForwardOutlinedIcon />
+                </ListItemButton>
+              </ListItem>
+              {Array.from(Array(20)).map(((i, index) => (
+                <ListItem key={index}>
+                  <ListItemButton>
+                    <ListItemText>Grand Indonesia, Jalan M.H. Thamrin, Kebon Melati, Central Jakarta City, Jakarta, Indonesia</ListItemText>
+                    <ArrowForwardOutlinedIcon />
+                  </ListItemButton>
+                </ListItem>
+              )))}
+            </List>
+          </Grid>
+        </DialogContent>
+      </Dialog>
     </Grid>
   );
 }
