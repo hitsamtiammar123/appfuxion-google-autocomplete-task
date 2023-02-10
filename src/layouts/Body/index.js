@@ -156,19 +156,21 @@ export default function Body() {
         onLoad={onLoad}
         onUnmount={onUnmount}
       >
-        <Marker onClick={() => setIsDisplayInfoWindow(!isDisplayInfoWindow)} position={location}>
-          {isDisplayInfoWindow && (
-            <InfoWindow onCloseClick={() => setIsDisplayInfoWindow(false)}>
-              <Button
-                onClick={savePlace}
-                variant="contained"
-                color={checkLocation ? 'error' : 'primary'}
-              >
-                {checkLocation ? 'Remove Location' : 'Save Location'}
-              </Button>
-            </InfoWindow>
-          )}
-        </Marker>
+        {place && (
+          <Marker onClick={() => setIsDisplayInfoWindow(!isDisplayInfoWindow)} position={location}>
+            {isDisplayInfoWindow && (
+              <InfoWindow onCloseClick={() => setIsDisplayInfoWindow(false)}>
+                <Button
+                  onClick={savePlace}
+                  variant="contained"
+                  color={checkLocation ? 'error' : 'primary'}
+                >
+                  {checkLocation ? 'Remove Location' : 'Save Location'}
+                </Button>
+              </InfoWindow>
+            )}
+          </Marker>
+        )}
       </GoogleMap>
     );
   }
