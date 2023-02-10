@@ -47,7 +47,7 @@ export default function Body() {
     apiKey: API_KEY,
     options: {
       strictBounds: false,
-      types: ['establishment1'],
+      types: ['establishment'],
     },
     onPlaceSelected: onPlaceSelected,
   });
@@ -60,7 +60,7 @@ export default function Body() {
     if (autocompleteRef.current) {
       const autocompleteElem = autocompleteRef.current;
       const placeChangedEvent = autocompleteElem.__e3_.place_changed;
-      if (Object.keys(placeChangedEvent).length === 0) {
+      if (placeChangedEvent && Object.keys(placeChangedEvent).length === 0) {
         autocompleteElem.addListener(onPlaceSelected);
       }
     }
